@@ -7,8 +7,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        Process p1 = new Process("Process 1", 2, 3, 2);
-        Process p2 = new Process("Process 2", 1, 4, 2);
+        Process p1 = new Process("Process 1", 2, 7, 2);
+        Process p2 = new Process("Process 2", 1, 7, 2);
         RequestGenerator generator = new RequestGenerator("Generator", 2);
 
         List<Element> elements = new ArrayList<>();

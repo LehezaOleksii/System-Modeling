@@ -35,7 +35,7 @@ public class Process extends Element {
             }
         } else {
             isBusy = true;
-            setNextEventTime(getCurrentTime() + request.getProcessingTime());
+            setNextEventTime(getCurrentTime() + request.getProcessingTime()+ taskDelay);
             System.out.println(getProcessInfo() + " is processing Request ID: " + request.getId() + "; Queue size: " + requestQueue.size());
         }
     }
