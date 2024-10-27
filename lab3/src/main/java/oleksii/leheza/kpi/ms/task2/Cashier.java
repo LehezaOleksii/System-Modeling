@@ -3,67 +3,56 @@ package oleksii.leheza.kpi.ms.task2;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
+import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
 
 @Getter
 @Setter
-class Cashier extends Element {
-    private Queue<Customer> queue;
+public class Cashier extends Element {
+
+    private int maxQueue;
+    private Deque<Client> clientQueue;
+    private int priority;
     private boolean isBusy;
-    private double serviceTimeRemaining;
-    private int maxQueueSize;
-    private List<Customer> servicedCustomers;
 
-    public Cashier(String name, int maxQueueSize) {
+    public Cashier(String name, int priority, int maxQueue) {
         super(name);
-        this.queue = new LinkedList<>();
+        this.maxQueue = maxQueue;
+        this.priority = priority;
+        this.clientQueue = new LinkedList<>();
         this.isBusy = false;
-        this.maxQueueSize = maxQueueSize;
-        this.servicedCustomers = new ArrayList<>();
     }
 
-    public void addCustomer(Customer customer) {
-        if (queue.size() < maxQueueSize) {
-            queue.add(customer);
-            System.out.println(getName() + " added Customer ID: " + customer.getId());
-        } else {
-            System.out.println(getName() + " queue is full. Customer ID: " + customer.getId() + " is rejected.");
-        }
-    }
-
-    public void serveCustomer(double currentTime) {
-        if (!queue.isEmpty()) {
-            Customer customer = queue.poll();
-            customer.setStartServiceTime(currentTime);
-            serviceTimeRemaining = customer.getServiceTime();
-            isBusy = true;
-            servicedCustomers.add(customer);
-            System.out.println(getName() + " started serving Customer ID: " + customer.getId());
-        }
-    }
-
-    public void update(double deltaTime) {
+    public void processRequest(Client client) {
         if (isBusy) {
-            serviceTimeRemaining -= deltaTime;
-            if (serviceTimeRemaining <= 0) {
-                isBusy = false;
-                System.out.println(getName() + " finished serving a customer.");
+            if (clientQueue.size() < maxQueue) {
+                clientQueue.add(client);
+                System.out.println(getProcessInfo() + " is busy; Queue size: " + clientQueue.size());
+            } else {
+                System.out.println(getProcessInfo() + " is busy; Queue size: " + clientQueue.size() + " FAILURE");
             }
+        } else {
+            isBusy = true;
+            setNextEventTime(getCurrentTime() + client.getProcessingTime());
+            System.out.println(getProcessInfo() + " is processing Request ID: " + client.getId() + "; Queue size: " + clientQueue.size());
         }
     }
 
-    public boolean isBusy() {
-        return isBusy;
+    public void releaseRequest() {
+        quantity++;
+        isBusy = false;
+        if (!clientQueue.isEmpty()) {
+            Client nextClient = clientQueue.poll();
+            setNextEventTime(getCurrentTime() + nextClient.getProcessingTime());
+            isBusy = true;
+            System.out.println(getProcessInfo() + " is processing next Request ID: " + nextClient.getId() + "; Queue size: " + clientQueue.size());
+        } else {
+            setNextEventTime(Double.MAX_VALUE);
+            System.out.println(getProcessInfo() + " is free; Queue size: " + clientQueue.size());
+        }
     }
 
-    public int getQueueSize() {
-        return queue.size();
-    }
-
-    public List<Customer> getServicedCustomers() {
-        return servicedCustomers;
+    private String getProcessInfo() {
+        return getName() + " id :" + getId();
     }
 }
