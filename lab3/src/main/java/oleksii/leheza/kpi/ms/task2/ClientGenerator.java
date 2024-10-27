@@ -11,12 +11,12 @@ public class ClientGenerator extends Element {
         this.clientArrivalFrequency = clientArrivalFrequency;
     }
 
-    public Client generateRequest() {
+    public Client generateClients() {
         setNextEventTime(getCurrentTime() + generateTime(clientArrivalFrequency));
         return new Client(generateTime(taskTime));
     }
 
-    private double generateTime(double timeMean) {
+    public double generateTime(double timeMean) {
         double a = 0;
         while (a == 0) {
             a = Math.random();

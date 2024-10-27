@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.Random;
 
 @Getter
 @Setter
@@ -14,6 +15,7 @@ public class Cashier extends Element {
     private Deque<Client> clientQueue;
     private int priority;
     private boolean isBusy;
+    private Random random = new Random();
 
     public Cashier(String name, int priority, int maxQueue) {
         super(name);
@@ -33,7 +35,7 @@ public class Cashier extends Element {
             }
         } else {
             isBusy = true;
-            setNextEventTime(getCurrentTime() + client.getProcessingTime());
+            setNextEventTime(getCurrentTime() + generateServiceTime());
             System.out.println(getProcessInfo() + " is processing Request ID: " + client.getId() + "; Queue size: " + clientQueue.size());
         }
     }
@@ -43,13 +45,19 @@ public class Cashier extends Element {
         isBusy = false;
         if (!clientQueue.isEmpty()) {
             Client nextClient = clientQueue.poll();
-            setNextEventTime(getCurrentTime() + nextClient.getProcessingTime());
+            setNextEventTime(getCurrentTime() + generateServiceTime());
             isBusy = true;
             System.out.println(getProcessInfo() + " is processing next Request ID: " + nextClient.getId() + "; Queue size: " + clientQueue.size());
         } else {
             setNextEventTime(Double.MAX_VALUE);
             System.out.println(getProcessInfo() + " is free; Queue size: " + clientQueue.size());
         }
+    }
+
+    private double generateServiceTime() {
+        double mean = 1.0;
+        double stdDev = 0.3;
+        return mean + random.nextGaussian() * stdDev;
     }
 
     private String getProcessInfo() {

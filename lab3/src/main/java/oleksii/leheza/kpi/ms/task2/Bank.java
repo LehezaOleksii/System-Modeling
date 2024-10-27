@@ -41,7 +41,7 @@ public class Bank {
             }
 
             if (currentElement instanceof ClientGenerator) {
-                Client client = ((ClientGenerator) currentElement).generateRequest();
+                Client client = ((ClientGenerator) currentElement).generateClients();
                 requestNum += 1;
                 assignRequestToProcess(client);
             } else if (currentElement instanceof Cashier) {
