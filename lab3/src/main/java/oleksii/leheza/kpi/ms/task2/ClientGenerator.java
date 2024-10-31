@@ -11,9 +11,9 @@ public class ClientGenerator extends Element {
         this.clientArrivalFrequency = clientArrivalFrequency;
     }
 
-    public Client generateClients() {
+    public Client generateClient(double arrivalTime) {
         setNextEventTime(getCurrentTime() + generateTime(clientArrivalFrequency));
-        return new Client(generateTime(taskTime));
+        return new Client(arrivalTime, generateTime(taskTime));
     }
 
     public double generateTime(double timeMean) {

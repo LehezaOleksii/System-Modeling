@@ -3,6 +3,7 @@ package oleksii.leheza.kpi.ms.task2;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
@@ -18,6 +19,11 @@ public class Bank {
     private int servedClients;
     private int failedRequests;
     private int switchedClients;
+    private List<Double> times = new ArrayList<>();
+    private List<Integer> clientsNum = new ArrayList<>();
+    private double lastDeparture;
+    private List<Double> departureTimes = new ArrayList<>();
+    private double clientTimeInBank;
 
     public Bank(List<Element> elements) {
         this.elements = elements;
@@ -27,6 +33,7 @@ public class Bank {
         Element currentElement = null;
         Cashier firstCashier = (Cashier) elements.get(0);
         Cashier secondCashier = (Cashier) elements.get(1);
+        trackClientsInBank(0.1);
         while (currentTime < modelTime) {
             nextTime = Double.MAX_VALUE;
             for (Element e : elements) {
@@ -35,19 +42,26 @@ public class Bank {
                     currentElement = e;
                 }
             }
+            double differenceBetweenActions = nextTime - currentTime;
             currentTime = nextTime;
             for (Element e : elements) {
                 e.setCurrentTime(currentTime);
             }
 
             if (currentElement instanceof ClientGenerator) {
-                Client client = ((ClientGenerator) currentElement).generateClients();
+                Client client = ((ClientGenerator) currentElement).generateClient(currentTime);
                 requestNum += 1;
                 assignRequestToProcess(client);
-            } else if (currentElement instanceof Cashier) {
-                ((Cashier) currentElement).releaseRequest();
+            } else if (currentElement instanceof Cashier cashier) {
+                if (cashier.getClientQueue().peek() != null) {
+                    clientTimeInBank += currentTime - cashier.getClientQueue().peek().getArrivalTime();
+                }
+                cashier.releaseRequest();
+                departureTimes.add(currentTime - lastDeparture);
+                lastDeparture = currentTime;
             }
             optimizeCashierQueues(firstCashier, secondCashier);
+            trackClientsInBank(differenceBetweenActions);
         }
     }
 
@@ -66,7 +80,7 @@ public class Bank {
         if (firstCashier.getClientQueue().size() == secondCashier.getClientQueue().size()) {
             if (!firstCashier.isBusy() || firstCashier.getClientQueue().size() < firstCashier.getMaxQueue()) {
                 System.out.println("Request ID " + client.getId() + " assigned to " + firstCashier.getName());
-                firstCashier.processRequest(client);
+                firstCashier.processRequest(client, currentTime);
                 assigned = true;
                 servedClients += 1;
             }
@@ -78,7 +92,7 @@ public class Bank {
 
             if (!preferredCashier.isBusy() || preferredCashier.getClientQueue().size() < preferredCashier.getMaxQueue()) {
                 System.out.println("Request ID " + client.getId() + " assigned to " + preferredCashier.getName());
-                preferredCashier.processRequest(client);
+                preferredCashier.processRequest(client, currentTime);
                 assigned = true;
                 servedClients += 1;
             }
@@ -117,5 +131,19 @@ public class Bank {
         toQueue.add(client);
         switchedClients += 1;
         System.out.println("Switch client id: " + client.getId());
+    }
+
+    private void trackClientsInBank(double time) {
+        int clients = 0;
+        for (Element e : elements) {
+            if (e instanceof Cashier cashier) {
+                clients += cashier.getClientQueue().size();
+                if (cashier.isBusy()) {
+                    clients += 1;
+                }
+                clientsNum.add(clients);
+                times.add(time);
+            }
+        }
     }
 }

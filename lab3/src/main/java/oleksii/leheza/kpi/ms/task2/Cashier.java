@@ -5,6 +5,7 @@ import lombok.Setter;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 @Getter
@@ -15,7 +16,11 @@ public class Cashier extends Element {
     private Deque<Client> clientQueue;
     private int priority;
     private boolean isBusy;
+    private double totalBusyTime;
     private Random random = new Random();
+    private Client currentClient;
+    private List<Double> timeOfQueue = new LinkedList<>();
+    private List<Integer> clientsNum = new LinkedList<>();
 
     public Cashier(String name, int priority, int maxQueue) {
         super(name);
@@ -25,7 +30,7 @@ public class Cashier extends Element {
         this.isBusy = false;
     }
 
-    public void processRequest(Client client) {
+    public void processRequest(Client client, double currentTime) {
         if (isBusy) {
             if (clientQueue.size() < maxQueue) {
                 clientQueue.add(client);
@@ -35,9 +40,12 @@ public class Cashier extends Element {
             }
         } else {
             isBusy = true;
+            currentClient = client;
             setNextEventTime(getCurrentTime() + generateServiceTime());
             System.out.println(getProcessInfo() + " is processing Request ID: " + client.getId() + "; Queue size: " + clientQueue.size());
         }
+        timeOfQueue.add(currentTime);
+        clientsNum.add(clientQueue.size());
     }
 
     public void releaseRequest() {
@@ -45,7 +53,9 @@ public class Cashier extends Element {
         isBusy = false;
         if (!clientQueue.isEmpty()) {
             Client nextClient = clientQueue.poll();
-            setNextEventTime(getCurrentTime() + generateServiceTime());
+            double busyTime = generateServiceTime();
+            setNextEventTime(getCurrentTime() + busyTime);
+            totalBusyTime += busyTime;
             isBusy = true;
             System.out.println(getProcessInfo() + " is processing next Request ID: " + nextClient.getId() + "; Queue size: " + clientQueue.size());
         } else {
@@ -59,6 +69,12 @@ public class Cashier extends Element {
         double stdDev = 0.3;
         return mean + random.nextGaussian() * stdDev;
     }
+
+//    private double generateExponential() {
+//        double lambda = 1 / 0.3;
+//        Random random = new Random();
+//        return -Math.log(1 - random.nextDouble()) / lambda;
+//    }
 
     private String getProcessInfo() {
         return getName() + " id :" + getId();
