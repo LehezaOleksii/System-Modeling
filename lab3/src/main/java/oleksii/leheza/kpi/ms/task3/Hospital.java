@@ -8,6 +8,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Random;
 
+import static oleksii.leheza.kpi.ms.task3.Main.Unif;
+
 @Getter
 @Setter
 public class Hospital {
@@ -124,7 +126,7 @@ public class Hospital {
     }
 
     private void sendToLaboratory(Patient patient) {
-        double transferTime = 2 + Math.random() * 3;
+        double transferTime = Unif(2,5);;
         patient.setNextEventTime(currentTime + transferTime);
         patient.setStatus(PatientStatus.HEAD_TO_LABORATORY);
         System.out.println("Patient ID " + patient.getId() + " sent to the laboratory");

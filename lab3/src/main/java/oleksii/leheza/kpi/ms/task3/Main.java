@@ -63,4 +63,13 @@ public class Main {
                 "Average patient time in the hospital: " + hospital.getClientTotalTime() / (double) hospital.getPatientTreated() + "\n" +
                 "Average clients arrival to laboratory: " + sum / (double) labVisiting);
     }
+
+    public static double Unif(double timeMin, double timeMax) {
+        double a = 0;
+        while (a == 0) {
+            a = Math.random();
+        }
+        a = timeMin + a * (timeMax - timeMin);
+        return a;
+    }
 }

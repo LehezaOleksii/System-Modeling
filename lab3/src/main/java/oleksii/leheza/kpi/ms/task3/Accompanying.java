@@ -5,6 +5,8 @@ import lombok.Setter;
 
 import java.util.Deque;
 
+import static oleksii.leheza.kpi.ms.task3.Main.Unif;
+
 @Getter
 @Setter
 public class Accompanying extends HospitalElement {
@@ -19,7 +21,7 @@ public class Accompanying extends HospitalElement {
 
     public void accompanyToRoom(Patient patient) {
         isBusy = true;
-        double transferTime = 3 + Math.random() * 5;
+        double transferTime = Unif(3,8);
         currentPatient = patient;
         setNextEventTime(getCurrentTime() + transferTime);
         System.out.println("Patient ID " + patient.getId() + " sent to the ward by " + name);
