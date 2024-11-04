@@ -23,7 +23,6 @@ public class Accompanying extends HospitalElement {
         currentPatient = patient;
         setNextEventTime(getCurrentTime() + transferTime);
         System.out.println("Patient ID " + patient.getId() + " sent to the ward by " + name);
-//        patient.setTotalTimeInSystem(patient.getTotalTimeInSystem() + transferTime);
     }
 
     public void release() {

@@ -46,5 +46,21 @@ public class Main {
         Hospital.setQueueForAccompaniment(queueForAccompaniment);
 
         hospital.simulate(simulateTime);
+
+
+        List<Double> times = hospital.getArrivalLabTimes();
+        Double lastTime = times.get(1);
+        double sum = lastTime;
+        int labVisiting = 1;
+        for (int i = 2; i < times.size(); i++) {
+            double time = times.get(i);
+            sum += time - lastTime;
+            lastTime = time;
+            labVisiting++;
+        }
+        System.out.println("----------Statistic----------\n" +
+                "patients: " + hospital.getPatientTreated() + "\n" +
+                "Average patient time in the hospital: " + hospital.getClientTotalTime() / (double) hospital.getPatientTreated() + "\n" +
+                "Average clients arrival to laboratory: " + sum / (double) labVisiting);
     }
 }

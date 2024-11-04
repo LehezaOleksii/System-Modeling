@@ -17,11 +17,11 @@ public class Patient extends HospitalElement {
     private double registrationTime;
     private double totalTimeInSystem;
 
-    public Patient(PatientType type, double registrationTime) {
+    public Patient(PatientType type, double registrationTime, double currentTime) {
         super("Patient ID " + patientId);
         id = patientId++;
         this.type = type;
         this.registrationTime = registrationTime;
-        this.arrivalTime = getCurrentTime();
+        this.arrivalTime = currentTime;
     }
 }

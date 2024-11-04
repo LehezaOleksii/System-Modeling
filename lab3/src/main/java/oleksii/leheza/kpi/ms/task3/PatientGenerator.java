@@ -6,7 +6,6 @@ public class PatientGenerator extends HospitalElement {
     private int type1RegistrationTime = PatientType.TYPE1.getRegistrationTime();
     private double type2Frequency = PatientType.TYPE2.getFrequency();
     private int type2RegistrationTime = PatientType.TYPE2.getRegistrationTime();
-    private double type3Frequency = PatientType.TYPE3.getFrequency();
     private int type3RegistrationTime = PatientType.TYPE3.getRegistrationTime();
 
     private double clientArrivalFrequency;
@@ -17,11 +16,11 @@ public class PatientGenerator extends HospitalElement {
         nextEventTime = 0;
     }
 
-    public Patient generatePatient() {
+    public Patient generatePatient(double currentTime) {
         PatientType patientType = generatePatientType();
         setNextEventTime(getCurrentTime() + generateTime(clientArrivalFrequency));
         double patientRegistartionTime = getRegistrationTime(patientType);
-        return new Patient(patientType, patientRegistartionTime);
+        return new Patient(patientType, patientRegistartionTime, currentTime);
     }
 
     private PatientType generatePatientType() {

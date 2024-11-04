@@ -1,11 +1,15 @@
 package oleksii.leheza.kpi.ms.task3;
 
+import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.Random;
 
+@Getter
+@Setter
 public class Hospital {
 
     private final ErlangDistribution erlangDistribution = new ErlangDistribution();
@@ -16,11 +20,17 @@ public class Hospital {
     @Setter
     private static Deque<Patient> patientsLaboratoryAssistantQueue;
 
+    private double clientTotalTime;
+    private int patientTreated;
+
     private double currentTime;
     private double nextTime;
     private HospitalElement currentElement;
     private List<HospitalElement> elements;
     private Random random = new Random();
+
+    private List<Double> arrivalLabTimes = new ArrayList<>();
+    private int arrivalLabNum;
 
     public Hospital(List<HospitalElement> elements) {
         this.elements = elements;
@@ -40,7 +50,7 @@ public class Hospital {
                 e.setCurrentTime(currentTime);
             }
             if (currentElement instanceof PatientGenerator) {
-                Patient patient = ((PatientGenerator) currentElement).generatePatient();
+                Patient patient = ((PatientGenerator) currentElement).generatePatient(currentTime);
                 System.out.println("Generated Patient: " + patient.getId() + " " + patient.getType());
                 registerPatientToHospital(patient);
             } else if (currentElement instanceof Doctor doctor) {
@@ -52,27 +62,36 @@ public class Hospital {
                     sendToLaboratory(currentPatient);
                 }
             } else if (currentElement instanceof Accompanying accompanying) {
+                Patient currentPatient = accompanying.getCurrentPatient();
                 accompanying.release();
+                double totalTime = currentTime - currentPatient.getArrivalTime();
+                currentPatient.setTotalTimeInSystem(totalTime);
+                System.out.println("Total patient " + currentPatient.getId() + " time :" + totalTime);
+                clientTotalTime += currentPatient.getTotalTimeInSystem();
+                patientTreated++;
             } else if (currentElement instanceof LaboratoryAssistant laboratoryAssistant) {
                 double randomValue = random.nextDouble();
                 Patient patient = laboratoryAssistant.getCurrentPatient();
                 if (randomValue <= 0.5) {
+                    double totalTime = currentTime - patient.getArrivalTime();
+                    patient.setTotalTimeInSystem(totalTime);
+                    System.out.println("Total patient " + patient.getId() + " time :" + totalTime);
+                    clientTotalTime += patient.getTotalTimeInSystem();
+                    patientTreated++;
                     patient.setType(PatientType.TYPE1);
                     patientsRegistrationQueue.add(patient);
-                    System.out.println("Patient ID " + patient.getId() + " return to the hospital\n" +
-                            "---------------------------------------------------");
+                    System.out.println("Patient ID " + patient.getId() + " return to the hospital\n" + "---------------------------------------------------");
                 } else {
-                    System.out.println("Patient ID " + patient.getId() + " finished the hospital session\n" +
-                            "---------------------------------------------------");
+                    System.out.println("Patient ID " + patient.getId() + " finished the hospital session\n" + "---------------------------------------------------");
                 }
                 laboratoryAssistant.releasePatient();
             } else if (currentElement instanceof Patient patient) {
                 if (patient.getStatus().equals(PatientStatus.HEAD_TO_LABORATORY)) {
+                    arrivalLabTimes.add(currentTime);
+                    arrivalLabNum += 1;
                     sendToRegistryOffice(patient);
                 } else if (patient.getStatus().equals(PatientStatus.IN_REGISTRY_OFFICE)) {
                     assignToLaboratoryAssistant(patient);
-                } else if (patient.getStatus().equals(PatientStatus.ASSIGNED_TO_LABORATORY_ASSISTANT)) {
-
                     if (elements.contains(patient)) {
                         elements.remove(patient);
                     }

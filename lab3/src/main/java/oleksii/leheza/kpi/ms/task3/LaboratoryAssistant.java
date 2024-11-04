@@ -31,9 +31,7 @@ public class LaboratoryAssistant extends HospitalElement {
         isBusy = false;
         if (!patientsLaboratoryAssistantQueue.isEmpty()) {
             Patient nextPatient = patientsLaboratoryAssistantQueue.pop();
-            setNextEventTime(getCurrentTime() + erlangDistribution.getNumber(4, 2));
-            isBusy = true;
-            System.out.println(name + " is processing next Patient ID: " + nextPatient.getId());
+            treatPatient(nextPatient);
         } else {
             setNextEventTime(Double.MAX_VALUE);
             System.out.println(name + " is free");
