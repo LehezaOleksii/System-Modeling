@@ -23,7 +23,6 @@ public class LaboratoryAssistant extends HospitalElement {
         isBusy = true;
         currentPatient = patient;
         setNextEventTime(getCurrentTime() + erlangDistribution.getNumber(4, 2));
-        patient.setStatus(PatientStatus.ASSIGNED_TO_LABORATORY_ASSISTANT);
         System.out.println(patient.getName() + " treat by a " + name);
     }
 
