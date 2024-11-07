@@ -114,7 +114,7 @@ public class Bank {
                 switchRequest(client, firstQueue, secondQueue);
             }
         }
-        if (firstQueue.size() >= secondQueue.size() + 2) {
+        if (firstQueue.size() <= secondQueue.size() + 2) {
             Client client;
             for (int i = firstQueue.size(); secondQueue.size() - i >= 2; ) {
                 client = secondQueue.peek();

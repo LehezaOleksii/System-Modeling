@@ -126,7 +126,7 @@ public class Hospital {
     }
 
     private void sendToLaboratory(Patient patient) {
-        double transferTime = Unif(2,5);;
+        double transferTime = Unif(2, 5);
         patient.setNextEventTime(currentTime + transferTime);
         patient.setStatus(PatientStatus.HEAD_TO_LABORATORY);
         System.out.println("Patient ID " + patient.getId() + " sent to the laboratory");
