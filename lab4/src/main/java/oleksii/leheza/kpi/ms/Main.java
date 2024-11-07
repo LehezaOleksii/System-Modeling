@@ -6,51 +6,91 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        List<Smo> smoList = new ArrayList<>();
 
-        List<SmoElement> smo1AllElements = new ArrayList<>();
+        RequestGenerator generator = new RequestGenerator("Generator", 2);
 
-        List<SmoElement> smo1Queue1Elements = new ArrayList<>();
-        SmoElement smo1Device1 = new Device("1) Device 1", 1.0);
-        SmoElement smo1Device2 = new Device("1) Device 2", 2.0);
-        smo1Queue1Elements.add(smo1Device1);
-        smo1Queue1Elements.add(smo1Device2);
-        SmoElement smo1Queue2 = new Queue("1) Queue 1", smo1Queue1Elements, 5);
-        SmoElement smo1Generator1 = new RequestGenerator("1) Generator 1", smo1Queue2, 1, 4);
+        Process p1_5 = new Process("1)Process 5", 2, 7, 2);
+        Process p1_6 = new Process("1)Process 6", 1, 7, 2);
+        List<Element> smo3Elements = new ArrayList<>();
+        smo3Elements.add(p1_5);
+        smo3Elements.add(p1_6);
+        Smo smo1_3 = new Smo(smo3Elements);
 
-        smo1AllElements.add(smo1Generator1);
-        smo1AllElements.add(smo1Queue2);
-        smo1AllElements.add(smo1Device2);
-        smo1AllElements.add(smo1Device1);
+        List<Element> previousProcesses1 = new ArrayList<>();
+        previousProcesses1.add(p1_5);
+        previousProcesses1.add(p1_6);
+        Process p1_3 = new Process("1)Process 3", 2, 7, 2, previousProcesses1);
+        Process p1_4 = new Process("1)Process 4", 1, 7, 2, previousProcesses1);
+        List<Element> smo2Elements = new ArrayList<>();
+        smo2Elements.add(p1_3);
+        smo2Elements.add(p1_4);
+        Smo smo1_2 = new Smo(smo2Elements);
 
-        Smo smo1 = new Smo(smo1AllElements);
+        List<Element> previousProcesses2 = new ArrayList<>();
+        previousProcesses2.add(p1_3);
+        previousProcesses2.add(p1_4);
+        Process p1_1 = new Process("1)Process 1", 2, 7, 2, previousProcesses2);
+        Process p1_2 = new Process("1)Process 2", 1, 7, 2, previousProcesses2);
+        List<Element> smo1Elements = new ArrayList<>();
+        smo1Elements.add(generator);
+        smo1Elements.add(p1_1);
+        smo1Elements.add(p1_2);
+        Smo smo1_1 = new Smo(smo1Elements);
 
-        List<SmoElement> smo2AllElements = new ArrayList<>();
+        List<Smo> smos1 = new ArrayList<>();
+        smos1.add(smo1_1);
+        smos1.add(smo1_2);
+        smos1.add(smo1_3);
+        Server server = new Server(smos1);
+        server.simulate(200);
 
-        SmoElement smo2Device2 = new Device("2) Device 2", 1.0);
-        SmoElement smo2Device3 = new Device("2) Device 3", 2.0);
-        List<SmoElement> smo2Queue1Elements = new ArrayList<>();
-        smo2Queue1Elements.add(smo2Device2);
-        smo2Queue1Elements.add(smo2Device3);
-        SmoElement smo2Queue2 = new Queue("2) Queue 1", smo2Queue1Elements);
-        SmoElement smo2Device1 = new Device("2) Device 1", smo2Queue2, 1.0);
-        SmoElement smo2Generator1 = new RequestGenerator("2) Generator 1", smo2Device1, 1, 3);
+//        Smo smo1 = getSimpleSmo(1);
+//        Smo smo2 = getSimpleSmo(2);
+//        Smo smo3 = getSimpleSmo(3);
+//
+//        List<Smo> smos1 = new ArrayList<>();
+//        smos1.add(smo1);
+//        smos1.add(smo2);
+//        smos1.add(smo3);
+//        Server server = new Server(smos1);
+//        server.simulate(200);
 
-        smo2Device1.addElement(smo1Device1);
-        smo2Device2.addElement(smo1Device1);
+//        Smo smo1d = getDifficultSmo(1);
+//        Smo smo2d = getDifficultSmo(2);
+//        Smo smo3d = getDifficultSmo(3);
+//
+//        List<Smo> smos1d = new ArrayList<>();
+//        smos1d.add(smo1d);
+//        smos1d.add(smo2d);
+//        smos1d.add(smo3d);
+//        Server server = new Server(smos1d);
+//        server.simulate(200);
 
-        smo2AllElements.add(smo2Queue2);
-        smo2AllElements.add(smo2Device1);
-        smo2AllElements.add(smo2Device2);
-        smo2AllElements.add(smo2Device3);
-        smo2AllElements.add(smo2Generator1);
+        printStatistic(server.getRequests(), server.getProcessed(), server.getFailed());
+    }
 
-        Smo smo2 = new Smo(smo2AllElements);
+    private static Smo getSimpleSmo(int smoNumber) {
+        Process p1 = new Process(smoNumber + ")Process 1", 2, 7, 2);
+        Process p2 = new Process(smoNumber + ")Process 2", 1, 7, 2);
+        RequestGenerator generator = new RequestGenerator("Generator", 2);
 
-        smoList.add(smo1);
-//        smoList.add(smo2);
+        List<Element> elements = new ArrayList<>();
+        elements.add(p1);
+        elements.add(p2);
+        elements.add(generator);
 
-        SmoSimulator smoSimulator = new SmoSimulator(smoList);
-        smoSimulator.simulate(200);
+        List<Element> smo1Elements = new ArrayList<>(elements);
+        Smo smo1 = new Smo(smo1Elements);
+        return smo1;
+    }
+
+    private static Smo getDifficultSmo(List<Element> smoElements) {
+        List<Element> smo1Elements = new ArrayList<>(smoElements);
+        Smo smo1 = new Smo(smo1Elements);
+        return smo1;
+    }
+
+    public static void printStatistic(int requests, int processed, int failed) {
+        System.out.println("----Statistic----\n" + "All requests :" + requests + "\n" + "Processed requests: " + processed + "\n" + "Failed requests: " + failed + "\n");
     }
 }

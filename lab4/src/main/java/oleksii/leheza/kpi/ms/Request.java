@@ -7,15 +7,15 @@ import lombok.Setter;
 @Setter
 public class Request {
 
-    private static int generalRequestId = 1;
+    private static int generalId = 1;
 
-    private String name;
     private int id;
-    private double requestTime;
+    private double processingTime;
 
-    public Request(double requestTime) {
-        name = "Request ID " + generalRequestId;
-        id = generalRequestId++;
-        this.requestTime = requestTime;
+    public Request(double processingTime) {
+        id = generalId;
+        generalId += 1;
+        this.processingTime = processingTime;
+        System.out.println("Generate Request ID: " + id);
     }
 }

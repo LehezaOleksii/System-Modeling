@@ -1,9 +1,10 @@
-package oleksii.leheza.kpi.ms.task1;
+package oleksii.leheza.kpi.ms;
 
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 @Getter
@@ -15,6 +16,7 @@ public class Process extends Element {
     private int priority;
     private boolean isBusy;
     private double taskDelay;
+    private List<Element> nextElements = new LinkedList<>();
 
     public Process(String name, int priority, double taskDelay, int maxQueue) {
         super(name);
@@ -23,6 +25,26 @@ public class Process extends Element {
         this.requestQueue = new LinkedList<>();
         this.taskDelay = taskDelay;
         this.isBusy = false;
+    }
+
+    public Process(String name, int priority, double taskDelay, int maxQueue, List<Element> nextElements) {
+        super(name);
+        this.maxQueue = maxQueue;
+        this.priority = priority;
+        this.requestQueue = new LinkedList<>();
+        this.taskDelay = taskDelay;
+        this.isBusy = false;
+        this.nextElements = nextElements;
+    }
+
+    public Process(String name, int priority, double taskDelay, int maxQueue, Element nextElement) {
+        super(name);
+        this.maxQueue = maxQueue;
+        this.priority = priority;
+        this.requestQueue = new LinkedList<>();
+        this.taskDelay = taskDelay;
+        this.isBusy = false;
+        this.nextElements.add(nextElement);
     }
 
     public void processRequest(Request request) {
@@ -35,7 +57,7 @@ public class Process extends Element {
             }
         } else {
             isBusy = true;
-            setNextEventTime(getCurrentTime() + request.getProcessingTime()+ taskDelay);
+            setNextEventTime(getCurrentTime() + request.getProcessingTime() + taskDelay);
             System.out.println(getProcessInfo() + " is processing Request ID: " + request.getId() + "; Queue size: " + requestQueue.size());
         }
     }
@@ -43,6 +65,16 @@ public class Process extends Element {
     public void releaseRequest() {
         quantity++;
         isBusy = false;
+        if (nextElements != null && !nextElements.isEmpty()) {
+            for (Element element : nextElements) {
+                if (element instanceof Process process) {
+                    if (!process.isBusy || process.getRequestQueue().size() < process.getMaxQueue()) {
+                        Request releasedRequest = requestQueue.peek();
+                        process.processRequest(releasedRequest);
+                    }
+                }
+            }
+        }
         if (!requestQueue.isEmpty()) {
             Request nextRequest = requestQueue.poll();
             setNextEventTime(getCurrentTime() + nextRequest.getProcessingTime() + taskDelay);

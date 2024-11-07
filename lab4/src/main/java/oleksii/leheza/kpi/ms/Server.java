@@ -1,4 +1,4 @@
-package oleksii.leheza.kpi.ms.task1;
+package oleksii.leheza.kpi.ms;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -43,8 +43,8 @@ public class Server {
                 Request request = ((RequestGenerator) currentElement).generateRequest();
                 requestNum += 1;
                 assignRequestToProcess(request);
-            } else if (currentElement instanceof Process) {
-                ((Process) currentElement).releaseRequest();
+            } else if (currentElement instanceof Process process) {
+                process.releaseRequest();
             }
         }
     }

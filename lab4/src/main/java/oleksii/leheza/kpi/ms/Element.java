@@ -1,4 +1,4 @@
-package oleksii.leheza.kpi.ms.task1;
+package oleksii.leheza.kpi.ms;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,15 +9,16 @@ abstract class Element {
 
     private static int generalId = 1;
 
-    private int id;
-    private String name;
-    private double currentTime;
-    private double nextEventTime;
+    protected int id;
+    protected String name;
+    protected double currentTime;
+    protected double nextEventTime;
     protected int quantity;
 
     public Element(String name) {
         this.name = name;
         id = generalId;
         generalId++;
+        nextEventTime = Double.MAX_VALUE;
     }
 }
