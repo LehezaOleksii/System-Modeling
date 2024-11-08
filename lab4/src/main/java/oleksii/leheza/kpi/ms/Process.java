@@ -63,6 +63,7 @@ public class Process extends Element {
     public void releaseRequest() {
         quantity++;
         isBusy = false;
+        currentRequest.setBusyTime(currentRequest.getBusyTime() + currentRequest.getProcessingTime());
         if (nextElements != null && !nextElements.isEmpty()) {
             for (Element element : nextElements) {
                 if (element instanceof Process process) {

@@ -11,6 +11,7 @@ public class Request {
 
     private int id;
     private double processingTime;
+    private double busyTime;
 
     public Request(double processingTime) {
         id = generalId;

@@ -3,9 +3,7 @@ package oleksii.leheza.kpi.ms;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Getter
 @Setter
@@ -17,6 +15,7 @@ public class Server {
     private int requestNum;
     private int processedRequests;
     private int failedRequests;
+    private Set<Request> processedRequest = new HashSet<>();
 
     public Server(List<Smo> smos) {
         for (Smo smo : smos) {
@@ -44,6 +43,8 @@ public class Server {
                 requestNum += 1;
                 assignRequestToProcess(requestGenerator, request);
             } else if (currentElement instanceof Process process) {
+                Request request = process.getCurrentRequest();
+                processedRequest.add(request);
                 process.releaseRequest();
             }
         }
